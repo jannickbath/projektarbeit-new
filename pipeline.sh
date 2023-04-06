@@ -6,7 +6,7 @@
 . /root/drone_env.sh
 
 VOLUME=/prod/$DRONE_REPO_NAME
-CONTAINERID=$(docker ps -aqf "name=${DRONE_REPO_NAME}")
+CONTAINERID=$(docker ps -aqf "name=^/${DRONE_REPO_NAME}$")
 CREATED=0
 
 if [ ! $CONTAINERID ]; then
@@ -15,7 +15,7 @@ if [ ! $CONTAINERID ]; then
     VOLUME=$VOLUME DRONE_REPO_NAME=$DRONE_REPO_NAME docker-compose build
     VOLUME=$VOLUME DRONE_REPO_NAME=$DRONE_REPO_NAME docker-compose up -d
 
-    CONTAINERID=$(docker ps -aqf "name=${DRONE_REPO_NAME}")
+    CONTAINERID=$(docker ps -aqf "name=^/${DRONE_REPO_NAME}$")
     CREATED=1
 
 fi
