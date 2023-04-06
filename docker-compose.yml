@@ -1,0 +1,24 @@
+services:
+    custom-next:
+        build: https://git.jannickus.com/jbath/docker-next.git
+
+        networks:
+            - traefik_net
+
+        volumes:
+            - $VOLUME:/project-data
+
+        ports:
+            - 3000
+
+        labels:
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.${DRONE_REPO_NAME}.entrypoints=web'
+            - 'traefik.http.routers.${DRONE_REPO_NAME}.rule=Host(`${DRONE_REPO_NAME}.prod.jannickus.com`)'
+
+        container_name: $DRONE_REPO_NAME
+        restart: always
+
+networks:
+    traefik_net:
+        external: true
