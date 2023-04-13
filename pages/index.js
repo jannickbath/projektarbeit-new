@@ -23,13 +23,10 @@ export default function Home() {
     const [weatherApiResponses, setWeatherApiResponses] = useState([]);
     const firestoreHandlerInstance = new FirestoreHandler(app);
 
-    // const openWeatherMapInstance = new OpenWeatherMap('dfb626366e5b1d6d7dc6eef5481389a2');
+    const openWeatherMapInstance = new OpenWeatherMap('dfb626366e5b1d6d7dc6eef5481389a2');
     const weatherApiInstance = new WeatherAPI('ec7ce5caf2ae4b03ad391006231304');
 
     useEffect(() => {
-        // openWeatherMapInstance.getWeatherData(52.520008, 13.404954).then(data => {
-        //     setOpenWeatherMapApiData(data);
-        // });
         firestoreHandlerInstance.fetchCollection('openweathermap').then(docs => {
             setOpenWeatherMapResponses(docs);
         });
@@ -37,9 +34,11 @@ export default function Home() {
         firestoreHandlerInstance.fetchCollection('weatherapi').then(docs => {
             setWeatherApiResponses(docs);
         });
-    }, [weatherApiData]);
+    }, [weatherApiData, openWeatherMapApiData]);
 
     function handleSubmit(e) {
+        // TODO - Remove redundant code between handleSubmit() and handleSubmitOpenWeather()
+        // TODO - After 10min a new record should be fetched and saved
         e.preventDefault();
         const latInput = e.target.querySelector("input[type='text'].lat");
         const lonInput = e.target.querySelector("input[type='text'].lon");
@@ -65,11 +64,39 @@ export default function Home() {
         console.log(weatherApiData, alreadyExists ? 'loc' : 'fetched');
     }
 
+    function handleSubmitOpenWeather(e) {
+        e.preventDefault();
+        const latInput = e.target.querySelector("input[type='text'].lat");
+        const lonInput = e.target.querySelector("input[type='text'].lon");
+
+        const alreadyExists = openWeatherMapResponses.find(doc => {
+            const docLat = doc.data().coord.lat;
+            const docLon = doc.data().coord.lon;
+
+            return docLat == latInput.value && docLon == lonInput.value;
+        });
+
+        if (alreadyExists) {
+            setOpenWeatherMapApiData(alreadyExists.data());
+        } else {
+            openWeatherMapInstance.getWeatherData(latInput.value, lonInput.value).then(data => {
+                setOpenWeatherMapApiData(data);
+                firestoreHandlerInstance.addToCollection('openweathermap', data);
+            });
+        }
+    }
+
     return (
         <>
             <h1>Hello World!</h1>
 
-            <form className="inputWrapper" onSubmit={e => handleSubmit(e)}>
+            <form
+                className="inputWrapper"
+                onSubmit={e => {
+                    handleSubmit(e);
+                    handleSubmitOpenWeather(e);
+                }}
+            >
                 <input type="text" className="lat" placeholder="lat" />
                 <input type="text" className="lon" placeholder="lon" />
                 <button type="submit">Submit</button>
