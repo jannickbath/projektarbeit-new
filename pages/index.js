@@ -20,15 +20,11 @@ export default function Home() {
     const [weatherApiData, setWeatherApiData] = useState({});
     const [openWeatherMapApiData, setOpenWeatherMapApiData] = useState({});
     const [openWeatherMapResponses, setOpenWeatherMapResponses] = useState([]);
+    const [weatherApiResponses, setWeatherApiResponses] = useState([]);
     const firestoreHandlerInstance = new FirestoreHandler(app);
 
     // const openWeatherMapInstance = new OpenWeatherMap('dfb626366e5b1d6d7dc6eef5481389a2');
-    // const weatherApiInstance = new WeatherAPI('ec7ce5caf2ae4b03ad391006231304');
-
-    // openWeatherMapInstance.getWeatherData(52.520008, 13.404954);
-    // weatherApiInstance.getWeatherData(52.520008, 13.404954).then(data => {
-    //     console.log(data);
-    // });
+    const weatherApiInstance = new WeatherAPI('ec7ce5caf2ae4b03ad391006231304');
 
     useEffect(() => {
         // openWeatherMapInstance.getWeatherData(52.520008, 13.404954).then(data => {
@@ -37,12 +33,47 @@ export default function Home() {
         firestoreHandlerInstance.fetchCollection('openweathermap').then(docs => {
             setOpenWeatherMapResponses(docs);
         });
-        console.log(openWeatherMapResponses);
-    }, []);
+
+        firestoreHandlerInstance.fetchCollection('weatherapi').then(docs => {
+            setWeatherApiResponses(docs);
+        });
+    }, [weatherApiData]);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        const latInput = e.target.querySelector("input[type='text'].lat");
+        const lonInput = e.target.querySelector("input[type='text'].lon");
+
+        console.log(weatherApiResponses);
+
+        const alreadyExists = weatherApiResponses.find(doc => {
+            const docLat = doc.data().location.lat;
+            const docLon = doc.data().location.lon;
+
+            return docLat == latInput.value && docLon == lonInput.value;
+        });
+
+        if (alreadyExists) {
+            setWeatherApiData(alreadyExists.data());
+        } else {
+            weatherApiInstance.getWeatherData(latInput.value, lonInput.value).then(data => {
+                setWeatherApiData(data);
+                firestoreHandlerInstance.addToCollection('weatherapi', data);
+            });
+        }
+
+        console.log(weatherApiData, alreadyExists ? 'loc' : 'fetched');
+    }
 
     return (
         <>
             <h1>Hello World!</h1>
+
+            <form className="inputWrapper" onSubmit={e => handleSubmit(e)}>
+                <input type="text" className="lat" placeholder="lat" />
+                <input type="text" className="lon" placeholder="lon" />
+                <button type="submit">Submit</button>
+            </form>
 
             {openWeatherMapResponses.map(response => {
                 return <p>{JSON.stringify(response.data())}</p>;

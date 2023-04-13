@@ -1,4 +1,4 @@
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 
 export default class FirestoreHandler {
     constructor(app) {
@@ -8,5 +8,14 @@ export default class FirestoreHandler {
     async fetchCollection(collectionName) {
         const collectionRef = collection(this.firestore, collectionName);
         return (await getDocs(collectionRef)).docs;
+    }
+
+    async addToCollection(collectionName, document) {
+        const collectionRef = collection(this.firestore, collectionName);
+        try {
+            await addDoc(collectionRef, document);
+        } catch (err) {
+            throw err;
+        }
     }
 }
