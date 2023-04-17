@@ -21,8 +21,10 @@ export default function Home() {
     const [openWeatherMapApiData, setOpenWeatherMapApiData] = useState({});
     const [openWeatherMapResponses, setOpenWeatherMapResponses] = useState([]);
     const [weatherApiResponses, setWeatherApiResponses] = useState([]);
+    const [latInput, setLatInput] = useState([]);
+    const [lonInput, setLonInput] = useState([]);
     const firestoreHandlerInstance = new FirestoreHandler(app);
-
+    
     const openWeatherMapInstance = new OpenWeatherMap('dfb626366e5b1d6d7dc6eef5481389a2');
     const weatherApiInstance = new WeatherAPI('ec7ce5caf2ae4b03ad391006231304');
 
@@ -36,69 +38,59 @@ export default function Home() {
         });
     }, [weatherApiData, openWeatherMapApiData]);
 
-    function handleSubmit(e) {
-        // TODO - Remove redundant code between handleSubmit() and handleSubmitOpenWeather()
+    function handleWeatherApi(e) {
         // TODO - After 10min a new record should be fetched and saved
         e.preventDefault();
-        const latInput = e.target.querySelector("input[type='text'].lat");
-        const lonInput = e.target.querySelector("input[type='text'].lon");
-
-        console.log(weatherApiResponses);
 
         const alreadyExists = weatherApiResponses.find(doc => {
             const docLat = doc.data().location.lat;
             const docLon = doc.data().location.lon;
 
-            return docLat == latInput.value && docLon == lonInput.value;
+            return docLat == latInput && docLon == lonInput;
         });
 
         if (alreadyExists) {
             setWeatherApiData(alreadyExists.data());
         } else {
-            weatherApiInstance.getWeatherData(latInput.value, lonInput.value).then(data => {
+            weatherApiInstance.getWeatherData(latInput, lonInput).then(data => {
                 setWeatherApiData(data);
                 firestoreHandlerInstance.addToCollection('weatherapi', data);
             });
         }
-
-        console.log(weatherApiData, alreadyExists ? 'loc' : 'fetched');
     }
 
-    function handleSubmitOpenWeather(e) {
+    function handleOpenWeather(e) {
         e.preventDefault();
-        const latInput = e.target.querySelector("input[type='text'].lat");
-        const lonInput = e.target.querySelector("input[type='text'].lon");
 
         const alreadyExists = openWeatherMapResponses.find(doc => {
             const docLat = doc.data().coord.lat;
             const docLon = doc.data().coord.lon;
 
-            return docLat == latInput.value && docLon == lonInput.value;
+            return docLat == latInput && docLon == lonInput;
         });
 
         if (alreadyExists) {
             setOpenWeatherMapApiData(alreadyExists.data());
         } else {
-            openWeatherMapInstance.getWeatherData(latInput.value, lonInput.value).then(data => {
+            openWeatherMapInstance.getWeatherData(latInput, lonInput).then(data => {
                 setOpenWeatherMapApiData(data);
                 firestoreHandlerInstance.addToCollection('openweathermap', data);
             });
         }
     }
 
+    function handleSubmit(e) {
+        handleOpenWeather(e);
+        handleWeatherApi(e);
+    }
+
     return (
         <>
             <h1>Hello World!</h1>
 
-            <form
-                className="inputWrapper"
-                onSubmit={e => {
-                    handleSubmit(e);
-                    handleSubmitOpenWeather(e);
-                }}
-            >
-                <input type="text" className="lat" placeholder="lat" />
-                <input type="text" className="lon" placeholder="lon" />
+            <form className="inputWrapper" onSubmit={e => handleSubmit(e)}>
+                <input type="text" className="lat" onChange={e => setLatInput(e.target.value)} placeholder="lat" />
+                <input type="text" className="lon" onChange={e => setLonInput(e.target.value)} placeholder="lon" />
                 <button type="submit">Submit</button>
             </form>
 
