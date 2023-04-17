@@ -3,6 +3,10 @@ import FirestoreHandler from '../Classes/FirestoreHandler';
 import OpenWeatherMap from '../Classes/OpenWeatherMap';
 import WeatherAPI from '../Classes/WeatherAPI';
 import { initializeApp } from 'firebase/app';
+import WeatherCard from '../components/WeatherCard';
+
+import WeatherApiDataset from '../Classes/WeatherApiDataset';
+import OpenWeatherMapDataset from '../Classes/OpenWeatherMapDataset';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyBO_7wXo6UTPVWInqARF5GRBp6FM_hGcog',
@@ -84,6 +88,10 @@ export default function Home() {
         handleWeatherApi(e);
     }
 
+    function isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+    }
+
     return (
         <>
             <h1>Hello World!</h1>
@@ -94,9 +102,15 @@ export default function Home() {
                 <button type="submit">Submit</button>
             </form>
 
-            {openWeatherMapResponses.map(response => {
-                return <p>{JSON.stringify(response.data())}</p>;
-            })}
+            {
+                !isEmpty(weatherApiData) &&
+                !isEmpty(openWeatherMapApiData) &&
+                <div className="weatherWrapper">
+                    <WeatherCard data={WeatherApiDataset.unify(weatherApiData)} provider="Weather API" />
+                    <WeatherCard data={OpenWeatherMapDataset.unify(openWeatherMapApiData)} provider="Open Weather Map" />
+                </div>  
+            }
+            
         </>
     );
 }

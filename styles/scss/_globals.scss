@@ -1,0 +1,18 @@
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.weatherWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.weatherCard {
+    background-color: lightblue;
+
+    &:nth-child(2n) {
+        background-color: orange;
+    }
+}

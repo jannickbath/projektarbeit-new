@@ -7,4 +7,13 @@ export default class Utility {
             throw err;
         }
     }
+
+    static fahrenheitToCelsius(fahrenheit) {
+        return ((fahrenheit - 32) * (5 / 9)).toFixed(1);
+    }
+
+    static kelvinToCelsius(kelvin) {
+        return (kelvin - 273.15).toFixed(1);
+    }
+    
 }
