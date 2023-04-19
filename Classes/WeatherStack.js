@@ -1,13 +1,13 @@
-import Utility from './Utility';
+import Utility from "./Utility";
 
-export default class OpenWeatherMap {
+export default class WeatherStack {
     constructor(apiKey) {
         this.apiKey = apiKey;
-        this.baseUrl = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}`;
+        this.baseUrl = `http://api.weatherstack.com/current?access_key=${apiKey}`;
     }
 
     async getWeatherData(location) {
-        const url = (this.baseUrl += `&q=${location}`);
+        const url = (this.baseUrl += `&query=${location}`);
 
         try {
             return await Utility.fetchJson(url);

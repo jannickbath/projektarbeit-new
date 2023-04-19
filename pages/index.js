@@ -1,12 +1,16 @@
+// Libraries
 import { useEffect, useState } from 'react';
+import { initializeApp } from 'firebase/app';
+
+// Classes
 import FirestoreHandler from '../Classes/FirestoreHandler';
 import OpenWeatherMap from '../Classes/OpenWeatherMap';
-import WeatherAPI from '../Classes/WeatherAPI';
-import { initializeApp } from 'firebase/app';
-import WeatherCard from '../components/WeatherCard';
-
-import WeatherApiDataset from '../Classes/WeatherApiDataset';
+import WeatherStack from '../Classes/WeatherStack';
 import OpenWeatherMapDataset from '../Classes/OpenWeatherMapDataset';
+import WeatherStackDataset from '../Classes/WeatherStackDataset';
+
+// Components
+import WeatherCard from '../components/WeatherCard';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyBO_7wXo6UTPVWInqARF5GRBp6FM_hGcog',
@@ -21,71 +25,75 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export default function Home() {
-    const [weatherApiData, setWeatherApiData] = useState({});
+    const [weatherStackApiData, setWeatherStackApiData] = useState([]);
     const [openWeatherMapApiData, setOpenWeatherMapApiData] = useState({});
-    const [openWeatherMapResponses, setOpenWeatherMapResponses] = useState([]);
-    const [weatherApiResponses, setWeatherApiResponses] = useState([]);
-    const [latInput, setLatInput] = useState([]);
-    const [lonInput, setLonInput] = useState([]);
-    const firestoreHandlerInstance = new FirestoreHandler(app);
-    
-    const openWeatherMapInstance = new OpenWeatherMap('dfb626366e5b1d6d7dc6eef5481389a2');
-    const weatherApiInstance = new WeatherAPI('ec7ce5caf2ae4b03ad391006231304');
 
+    const [openWeatherMapResponses, setOpenWeatherMapResponses] = useState([]);
+    const [weatherStackFirestore, setWeatherStackFirestore] = useState([]);
+
+    const [locationInput, setLocationInput] = useState("");
+
+    // Instantiate classes
+    const firestoreHandlerInstance = new FirestoreHandler(app);
+    const openWeatherMapInstance = new OpenWeatherMap('dfb626366e5b1d6d7dc6eef5481389a2');
+    const weatherStackInstance = new WeatherStack("5e2be9f1ff964163a9d3430aef2d04dd");
+
+    // Fetch docs from firestore (copies from api)
     useEffect(() => {
         firestoreHandlerInstance.fetchCollection('openweathermap').then(docs => {
             setOpenWeatherMapResponses(docs);
         });
 
-        firestoreHandlerInstance.fetchCollection('weatherapi').then(docs => {
-            setWeatherApiResponses(docs);
+        firestoreHandlerInstance.fetchCollection('weatherstack').then(docs => {
+            setWeatherStackFirestore(docs);
         });
-    }, [weatherApiData, openWeatherMapApiData]);
+    }, [weatherStackApiData, openWeatherMapApiData]);
 
-    function handleWeatherApi(e) {
-        // TODO - After 10min a new record should be fetched and saved
-        e.preventDefault();
-
-        const alreadyExists = weatherApiResponses.find(doc => {
-            const docLat = doc.data().location.lat;
-            const docLon = doc.data().location.lon;
-
-            return docLat == latInput && docLon == lonInput;
-        });
-
-        if (alreadyExists) {
-            setWeatherApiData(alreadyExists.data());
-        } else {
-            weatherApiInstance.getWeatherData(latInput, lonInput).then(data => {
-                setWeatherApiData(data);
-                firestoreHandlerInstance.addToCollection('weatherapi', data);
-            });
-        }
-    }
-
+    // TODO - After 10min a new record should be fetched and saved
+    // TODO - Handle Translations e.g. münchen -> munich
+    // TODO - Error handling for false requests -> dont save in db
+        
     function handleOpenWeather(e) {
         e.preventDefault();
 
         const alreadyExists = openWeatherMapResponses.find(doc => {
-            const docLat = doc.data().coord.lat;
-            const docLon = doc.data().coord.lon;
-
-            return docLat == latInput && docLon == lonInput;
+            return locationInput.toLowerCase() == doc.data().name.toLowerCase();
         });
 
         if (alreadyExists) {
+            console.log("exists openweathermap")
             setOpenWeatherMapApiData(alreadyExists.data());
         } else {
-            openWeatherMapInstance.getWeatherData(latInput, lonInput).then(data => {
+            console.log("fetched openweathermap");
+            openWeatherMapInstance.getWeatherData(locationInput).then(data => {
                 setOpenWeatherMapApiData(data);
                 firestoreHandlerInstance.addToCollection('openweathermap', data);
             });
         }
     }
 
+    function handleWeatherStack(e) {
+        e.preventDefault();
+
+        const alreadyExists = weatherStackFirestore.find(doc => {
+            return locationInput.toLowerCase() == doc.data().location.name.toLowerCase();
+        });
+
+        if (alreadyExists) {
+            console.log("exists weatherstack");
+            setWeatherStackApiData(alreadyExists.data());
+        } else {
+            console.log("fetched weatherstack");
+            weatherStackInstance.getWeatherData(locationInput).then(data => {
+                setWeatherStackApiData(data);
+                firestoreHandlerInstance.addToCollection('weatherstack', data);
+            });
+        }
+    }
+
     function handleSubmit(e) {
         handleOpenWeather(e);
-        handleWeatherApi(e);
+        handleWeatherStack(e);
     }
 
     function isEmpty(obj) {
@@ -97,16 +105,15 @@ export default function Home() {
             <h1>Hello World!</h1>
 
             <form className="inputWrapper" onSubmit={e => handleSubmit(e)}>
-                <input type="text" className="lat" onChange={e => setLatInput(e.target.value)} placeholder="lat" />
-                <input type="text" className="lon" onChange={e => setLonInput(e.target.value)} placeholder="lon" />
+                <input type="text" className="location" onChange={e => setLocationInput(e.target.value)} placeholder="location" />
                 <button type="submit">Submit</button>
             </form>
 
             {
-                !isEmpty(weatherApiData) &&
+                !isEmpty(weatherStackApiData) &&
                 !isEmpty(openWeatherMapApiData) &&
                 <div className="weatherWrapper">
-                    <WeatherCard data={WeatherApiDataset.unify(weatherApiData)} provider="Weather API" />
+                    <WeatherCard data={WeatherStackDataset.unify(weatherStackApiData)} provider="Weatherstack" />
                     <WeatherCard data={OpenWeatherMapDataset.unify(openWeatherMapApiData)} provider="Open Weather Map" />
                 </div>  
             }
