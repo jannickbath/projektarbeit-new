@@ -16,4 +16,7 @@ export default class Utility {
         return (kelvin - 273.15).toFixed(1);
     }
     
+    static isEmpty(obj) {
+        return Object.keys(obj).length === 0;
+    }
 }
