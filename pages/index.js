@@ -85,7 +85,7 @@ export default function Home() {
             openWeatherMapInstance.getWeatherData(locationInput).then(data => {
                 if (data?.cod == 200) {
                     setOpenWeatherMapApiData(data);
-                    firestoreHandlerInstance.addToCollection('openweathermap', {...data, name: locationInput.toLowerCase()});
+                    firestoreHandlerInstance.addToCollection('openweathermap', {...data, name: locationInput.toLowerCase(), valid: true});
                 }else {
                     setOpenWeatherMapApiData({});
                     firestoreHandlerInstance.addToCollection('openweathermap', { name: locationInput.toLowerCase(), valid: false });
@@ -126,7 +126,7 @@ export default function Home() {
                     firestoreHandlerInstance.addToCollection('weatherstack', { name: locationInput.toLowerCase(), valid: false });
                 }else {
                     setWeatherStackApiData(data);
-                    firestoreHandlerInstance.addToCollection('weatherstack', {...data, name: locationInput.toLowerCase()});
+                    firestoreHandlerInstance.addToCollection('weatherstack', {...data, name: locationInput.toLowerCase(), valid: true});
                 }
             });
         }
