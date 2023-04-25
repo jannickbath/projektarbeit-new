@@ -56,43 +56,53 @@ export default function Home() {
     // TODO - After 10min a new record should be fetched and saved
     // TODO - Handle Translations e.g. münchen -> munich
         
-    function handleOpenWeather(e) {
+    async function handleOpenWeather(e) {
         e.preventDefault();
-
+    
         let alreadyExists = openWeatherMapResponses.find(doc => {
             const locationName = doc.data()?.name ?? "";
+            const valid = doc.data()?.valid ?? true;
+            
             if (locationName) {
-                return locationInput.toLowerCase() == locationName.toLowerCase();
+                return locationInput.toLowerCase() == locationName.toLowerCase() && valid;
             }
         }) ?? {};
-
+    
         if (isEmpty(alreadyExists)) {
             alreadyExists.data = () => {return {}}
         }
-
+    
+        const locationExistsInFirebase = await firestoreHandlerInstance.checkIfInvalidRequestExists('openweathermap', locationInput.toLowerCase());
+    
         if (!isEmpty(alreadyExists.data())) {
             console.log("exists openweathermap")
             setOpenWeatherMapApiData(alreadyExists.data());
+        } else if (locationExistsInFirebase) {
+            console.log("exists invalid")
+            setOpenWeatherMapApiData({});
         } else {
             console.log("fetched openweathermap");
             openWeatherMapInstance.getWeatherData(locationInput).then(data => {
                 if (data?.cod == 200) {
                     setOpenWeatherMapApiData(data);
-                    firestoreHandlerInstance.addToCollection('openweathermap', data);
+                    firestoreHandlerInstance.addToCollection('openweathermap', {...data, name: locationInput.toLowerCase()});
                 }else {
                     setOpenWeatherMapApiData({});
+                    firestoreHandlerInstance.addToCollection('openweathermap', { name: locationInput.toLowerCase(), valid: false });
                 }
             });
         }
     }
 
-    function handleWeatherStack(e) {
+    async function handleWeatherStack(e) {
         e.preventDefault();
 
         const alreadyExists = weatherStackFirestore.find(doc => {
             const locationName = doc.data()?.location?.name ?? "";
+            const valid = doc.data()?.valid ?? true;
+
             if (locationName) {
-                return locationInput.toLowerCase() == locationName.toLowerCase();
+                return locationInput.toLowerCase() == locationName.toLowerCase() && valid;
             }
         }) ?? {};
 
@@ -100,17 +110,23 @@ export default function Home() {
             alreadyExists.data = () => {return {}}
         }
 
+        const locationExistsInFirebase = await firestoreHandlerInstance.checkIfInvalidRequestExists('weatherstack', locationInput.toLowerCase());
+
         if (!isEmpty(alreadyExists.data())) {
             console.log("exists weatherstack");
             setWeatherStackApiData(alreadyExists.data());
+        }else if (locationExistsInFirebase) {
+            console.log("exists invalid")
+            setWeatherStackApiData({});
         } else {
             console.log("fetched weatherstack");
             weatherStackInstance.getWeatherData(locationInput).then(data => {
                 if (data?.success == false) {
                     setWeatherStackApiData({});
+                    firestoreHandlerInstance.addToCollection('weatherstack', { name: locationInput.toLowerCase(), valid: false });
                 }else {
                     setWeatherStackApiData(data);
-                    firestoreHandlerInstance.addToCollection('weatherstack', data);
+                    firestoreHandlerInstance.addToCollection('weatherstack', {...data, name: locationInput.toLowerCase()});
                 }
             });
         }

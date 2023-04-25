@@ -1,4 +1,4 @@
-import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, query, where } from 'firebase/firestore';
 
 export default class FirestoreHandler {
     constructor(app) {
@@ -17,5 +17,11 @@ export default class FirestoreHandler {
         } catch (err) {
             throw err;
         }
+    }
+
+    async checkIfInvalidRequestExists(collectionName, locationName) {
+        const collectionRef = collection(this.firestore, collectionName);
+        const querySnapshot = await getDocs(query(collectionRef, where('name', '==', locationName), where('valid', '==', false)));
+        return !querySnapshot.empty;
     }
 }
