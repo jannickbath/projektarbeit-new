@@ -79,7 +79,7 @@ export default function Home() {
     
         const locationExistsInFirebase = await firestoreHandlerInstance.checkIfInvalidRequestExists('openweathermap', locationInput.toLowerCase());
     
-        if (!isEmpty(alreadyExists.data())) {
+        if (!isEmpty(alreadyExists.data()) && !Utility.isAtLeast10MinutesAgo(alreadyExists.data()?.lastUpdated)) {
             console.log("exists openweathermap")
             setOpenWeatherMapApiData(alreadyExists.data());
         } else if (locationExistsInFirebase) {
@@ -117,7 +117,7 @@ export default function Home() {
 
         const locationExistsInFirebase = await firestoreHandlerInstance.checkIfInvalidRequestExists('weatherstack', locationInput.toLowerCase());
 
-        if (!isEmpty(alreadyExists.data())) {
+        if (!isEmpty(alreadyExists.data()) && !Utility.isAtLeast10MinutesAgo(alreadyExists.data()?.lastUpdated)) {
             console.log("exists weatherstack");
             setWeatherStackApiData(alreadyExists.data());
         }else if (locationExistsInFirebase) {
