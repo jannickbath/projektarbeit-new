@@ -19,4 +19,14 @@ export default class Utility {
     static isEmpty(obj) {
         return Object.keys(obj).length === 0;
     }
+
+    static isAtLeast10MinutesAgo(time) {
+        if (time != undefined) {
+            const tenMinutesInSeconds = 600;
+            const currentTime = Math.floor(Date.now() / 1000);
+            return (currentTime - time) >= tenMinutesInSeconds;
+        }else {
+            return false;
+        }
+    }
 }

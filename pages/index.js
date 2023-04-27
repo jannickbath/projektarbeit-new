@@ -42,6 +42,8 @@ export default function Home() {
 
     const isEmpty = Utility.isEmpty;
 
+    const currentSSE = Math.floor(Date.now() / 1000);
+
     // Fetch docs from firestore (copies from api)
     useEffect(() => {
         firestoreHandlerInstance.fetchCollection('openweathermap').then(docs => {
