@@ -142,7 +142,7 @@ export default function Home() {
 
     return (
         <>
-            <h1>Hello World!</h1>
+            <h1>Projektarbeit Jannick & Lina FIN 11</h1>
 
             <form className="inputWrapper" onSubmit={e => handleSubmit(e)}>
                 <input type="text" className="location" onChange={e => setLocationInput(e.target.value)} placeholder="location" />

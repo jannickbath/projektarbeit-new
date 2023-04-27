@@ -10,8 +10,14 @@ export default function WeatherCard(props)
         return (
             <div className="weatherCard">
                 <h3 className="provider">{props.provider}</h3>
-                <p>{JSON.stringify(props.data)}</p>
-            </div>        
+                {
+                Object.entries(props.data).map(([key, value]) => (
+                    <div key={key}>
+                    <span>{key}: </span>
+                    <span>{value}</span>
+                </div>
+                ))}
+            </div>
         );
     }
 }
