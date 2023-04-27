@@ -10,6 +10,10 @@ export default class FirestoreHandler {
         return (await getDocs(collectionRef)).docs;
     }
 
+    async sortDocsByNewest(docs) {
+        return docs.sort((a, b) => b.data().lastUpdated - a.data().lastUpdated);
+    }
+
     async addToCollection(collectionName, document) {
         const collectionRef = collection(this.firestore, collectionName);
         try {

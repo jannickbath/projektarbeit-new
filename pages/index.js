@@ -47,16 +47,19 @@ export default function Home() {
     // Fetch docs from firestore (copies from api)
     useEffect(() => {
         firestoreHandlerInstance.fetchCollection('openweathermap').then(docs => {
-            setOpenWeatherMapResponses(docs);
+            firestoreHandlerInstance.sortDocsByNewest(docs).then(sortedDocs => {
+                setOpenWeatherMapResponses(sortedDocs);
+            });
         });
 
         firestoreHandlerInstance.fetchCollection('weatherstack').then(docs => {
-            setWeatherStackFirestore(docs);
+            firestoreHandlerInstance.sortDocsByNewest(docs).then(sortedDocs => {
+                setWeatherStackFirestore(sortedDocs);
+            });
         });
     }, [weatherStackApiData, openWeatherMapApiData]);
 
     // TODO - After 10min a new record should be fetched and saved
-    // TODO - Handle Translations e.g. münchen -> munich
         
     async function handleOpenWeather(e) {
         e.preventDefault();
