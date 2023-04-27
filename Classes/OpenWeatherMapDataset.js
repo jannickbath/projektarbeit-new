@@ -10,7 +10,7 @@ export default class OpenWeatherMapDataset {
             description: dataset.weather[0].description,
             temperature: Utility.kelvinToCelsius(dataset.main.temp),
             humidity: dataset.main.humidity,
-            last_updated: dataset.dt
+            fetched: dataset.lastUpdated
         }
     }
 }

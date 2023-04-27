@@ -85,10 +85,10 @@ export default function Home() {
             openWeatherMapInstance.getWeatherData(locationInput).then(data => {
                 if (data?.cod == 200) {
                     setOpenWeatherMapApiData(data);
-                    firestoreHandlerInstance.addToCollection('openweathermap', {...data, name: locationInput.toLowerCase(), valid: true});
+                    firestoreHandlerInstance.addToCollection('openweathermap', {...data, name: locationInput.toLowerCase(), valid: true, lastUpdated: currentSSE});
                 }else {
                     setOpenWeatherMapApiData({});
-                    firestoreHandlerInstance.addToCollection('openweathermap', { name: locationInput.toLowerCase(), valid: false });
+                    firestoreHandlerInstance.addToCollection('openweathermap', { name: locationInput.toLowerCase(), valid: false, lastUpdated: currentSSE });
                 }
             });
         }
@@ -123,10 +123,10 @@ export default function Home() {
             weatherStackInstance.getWeatherData(locationInput).then(data => {
                 if (data?.success == false) {
                     setWeatherStackApiData({});
-                    firestoreHandlerInstance.addToCollection('weatherstack', { name: locationInput.toLowerCase(), valid: false });
+                    firestoreHandlerInstance.addToCollection('weatherstack', { name: locationInput.toLowerCase(), valid: false, lastUpdated: currentSSE });
                 }else {
                     setWeatherStackApiData(data);
-                    firestoreHandlerInstance.addToCollection('weatherstack', {...data, name: locationInput.toLowerCase(), valid: true});
+                    firestoreHandlerInstance.addToCollection('weatherstack', {...data, name: locationInput.toLowerCase(), valid: true, lastUpdated: currentSSE});
                 }
             });
         }
