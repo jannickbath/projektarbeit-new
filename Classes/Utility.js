@@ -20,6 +20,22 @@ export default class Utility {
         return Object.keys(obj).length === 0;
     }
 
+    static secondsToDate(seconds) {
+        // Create a new Date object from the seconds since epoch
+        const date = new Date(seconds * 1000);
+
+        const formattedDate = date.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        return formattedDate;
+    }
+
     static isAtLeast10MinutesAgo(time) {
         if (time != undefined) {
             const tenMinutesInSeconds = 600;

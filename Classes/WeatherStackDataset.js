@@ -10,7 +10,7 @@ export default class WeatherStackDataset {
             description: dataset.current.weather_descriptions[0],
             temperature: dataset.current.temperature,
             humidity: dataset.current.humidity,
-            fetched: dataset.lastUpdated
+            fetched: Utility.secondsToDate(dataset.lastUpdated)
         }
     }
 }
