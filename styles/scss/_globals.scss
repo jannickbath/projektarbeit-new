@@ -4,15 +4,56 @@ body {
     overflow-x: hidden;
 }
 
+.main-wrapper {
+    padding: 5rem 7rem;
+}
+
+h1,h2 {
+    width: fit-content;
+    margin: auto;
+}
+
+h1 {
+    margin-bottom: 1rem;
+}
+
+h2 {
+    margin-bottom: 2rem;
+}
+
+.provider {
+    width: fit-content;
+    margin: auto;
+    margin-top: 0;
+}
+
+.inputWrapper {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    input {
+        height: 35px;
+        font-size: 20px;
+        border: 2px solid grey;
+    }
+
+    button[type="submit"] {
+        width: 120px;
+        border: 2px solid limegreen;
+        background-color: transparent;
+        transition: all 200ms ease-out;
+        cursor: pointer;
+
+        &:hover {
+            background-color: limegreen;
+        }
+    }
+}
+
 .weatherWrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
-}
-
-.weatherCard {
-    background-color: lightblue;
-
-    &:nth-child(2n) {
-        background-color: orange;
-    }
+    gap: 5rem;
 }

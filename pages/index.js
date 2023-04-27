@@ -144,11 +144,12 @@ export default function Home() {
     }
 
     return (
-        <>
+        <div className='main-wrapper'>
             <h1>Projektarbeit Jannick & Lina FIN 11</h1>
+            <h2>Hier können Sie Wetterdaten verschiedener Anbieter miteinander vergleichen</h2>
 
             <form className="inputWrapper" onSubmit={e => handleSubmit(e)}>
-                <input type="text" className="location" onChange={e => setLocationInput(e.target.value)} placeholder="location" />
+                <input type="text" className="location" onChange={e => setLocationInput(e.target.value)} placeholder="Ort" />
                 <button type="submit">Submit</button>
             </form>
 
@@ -159,6 +160,6 @@ export default function Home() {
                 <WeatherCard data={OpenWeatherMapDataset.unify(openWeatherMapApiData)} provider="Open Weather Map" />
             </div>
         }
-        </>
+        </div>
     );
 }

@@ -7,10 +7,10 @@ export default class WeatherStackDataset {
         }
 
         return {
-            description: dataset.current.weather_descriptions[0],
-            temperature: dataset.current.temperature,
-            humidity: dataset.current.humidity,
-            fetched: Utility.secondsToDate(dataset.lastUpdated)
+            Description: dataset.current.weather_descriptions[0],
+            Temperature: dataset.current.temperature + "°C",
+            Humidity: dataset.current.humidity,
+            Fetched: Utility.secondsToDate(dataset.lastUpdated)
         }
     }
 }

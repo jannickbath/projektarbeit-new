@@ -3,14 +3,46 @@ body {
   height: 100%;
   overflow-x: hidden; }
 
+.main-wrapper {
+  padding: 5rem 7rem; }
+
+h1, h2 {
+  width: fit-content;
+  margin: auto; }
+
+h1 {
+  margin-bottom: 1rem; }
+
+h2 {
+  margin-bottom: 2rem; }
+
+.provider {
+  width: fit-content;
+  margin: auto;
+  margin-top: 0; }
+
+.inputWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem; }
+  .inputWrapper input {
+    height: 35px;
+    font-size: 20px;
+    border: 2px solid grey; }
+  .inputWrapper button[type="submit"] {
+    width: 120px;
+    border: 2px solid limegreen;
+    background-color: transparent;
+    transition: all 200ms ease-out;
+    cursor: pointer; }
+    .inputWrapper button[type="submit"]:hover {
+      background-color: limegreen; }
+
 .weatherWrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr; }
-
-.weatherCard {
-  background-color: lightblue; }
-  .weatherCard:nth-child(2n) {
-    background-color: orange; }
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem; }
 
 html,
 body {
@@ -31,3 +63,19 @@ a {
   body {
     color: white;
     background: black; } }
+
+.weatherCard {
+  display: grid;
+  gap: 1rem;
+  border: 3px solid lightblue;
+  border-radius: 5px;
+  padding: 1.5rem;
+  font-size: 20px; }
+  .weatherCard.invalid {
+    place-items: center; }
+  .weatherCard:nth-child(2n) {
+    border-color: orange; }
+  .weatherCard .property {
+    padding: 1rem;
+    border: 1.5px solid limegreen;
+    border-radius: 5px; }

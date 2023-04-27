@@ -1,8 +1,10 @@
+import Utility from "../Classes/Utility";
+
 export default function WeatherCard(props)
 {
-    if (isEmpty(props.data)) {
+    if (Utility.isEmpty(props.data)) {
         return (
-            <div className="weatherCard">
+            <div className="weatherCard invalid">
                 <h1>Invalid Location</h1>
             </div> 
         )
@@ -12,7 +14,7 @@ export default function WeatherCard(props)
                 <h3 className="provider">{props.provider}</h3>
                 {
                 Object.entries(props.data).map(([key, value]) => (
-                    <div key={key}>
+                <div key={key} className="property">
                     <span>{key}: </span>
                     <span>{value}</span>
                 </div>
@@ -20,8 +22,4 @@ export default function WeatherCard(props)
             </div>
         );
     }
-}
-
-function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
 }

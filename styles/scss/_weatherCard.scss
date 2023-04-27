@@ -1,0 +1,22 @@
+.weatherCard {
+    display: grid;
+    gap: 1rem;
+    border: 3px solid lightblue;
+    border-radius: 5px;
+    padding: 1.5rem;
+    font-size: 20px;
+
+    &.invalid {
+        place-items: center;
+    }
+
+    &:nth-child(2n) {
+        border-color: orange;
+    }
+
+    .property {
+        padding: 1rem;
+        border: 1.5px solid limegreen;
+        border-radius: 5px;
+    }
+}
