@@ -16,6 +16,12 @@ services:
             - 'traefik.http.routers.${DRONE_REPO_NAME}.entrypoints=web'
             - 'traefik.http.routers.${DRONE_REPO_NAME}.rule=Host(`${DRONE_REPO_NAME}.prod.jannickus.com`)'
 
+            - 'traefik.http.routers.${DRONE_REPO_NAME}https.entrypoints=websecure'
+            - 'traefik.http.routers.${DRONE_REPO_NAME}https.rule=Host(`${DRONE_REPO_NAME}.prod.jannickus.com`)'
+            - "traefik.http.routers.${DRONE_REPO_NAME}https.tls.certresolver=myresolver"
+            - "traefik.http.services.${DRONE_REPO_NAME}https.loadbalancer.server.port=3000"
+            - "traefik.http.routers.${DRONE_REPO_NAME}https.middlewares=global-websocket"
+
         container_name: $DRONE_REPO_NAME
         restart: always
 
